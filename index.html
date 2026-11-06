@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>מעין מוטאי — מייקר | הנדסת מכונות</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;900&family=Heebo:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #F2F1EC;
+    --panel: #FDFCFA;
+    --panel-2: #EAE8E1;
+    --line: #D2CFC5;
+    --line-soft: #E2DFD6;
+    --text: #1B1E20;
+    --text-dim: #565B5F;
+    --text-faint: #8B9095;
+    --accent: #1F4E79;
+    --accent-dim: #16374F;
+    --blueprint: #1F4E79;
+    --radius: 2px;
+  }
+
+  *{ box-sizing: border-box; }
+  html{
+    scroll-behavior: smooth;
+    background: #F2F1EC;
+    color-scheme: light;
+  }
+
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Heebo', sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      linear-gradient(var(--line-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+    background-size: 48px 48px;
+    background-position: -1px -1px;
+  }
+
+  .mono{ font-family: 'JetBrains Mono', monospace; }
+
+  a{ color: inherit; text-decoration: none; }
+
+  ::selection{ background: var(--accent); color: #F2F1EC; }
+
+  /* focus visibility */
+  a:focus-visible, button:focus-visible{
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  .wrap{
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  /* ---------- registration marks ---------- */
+  .reg{
+    position: absolute;
+    width: 18px; height: 18px;
+    pointer-events: none;
+    opacity: .55;
+  }
+  .reg::before, .reg::after{
+    content:"";
+    position:absolute;
+    background: var(--text-faint);
+  }
+  .reg::before{ width:100%; height:1px; top:50%; }
+  .reg::after{ width:1px; height:100%; left:50%; }
+  .reg.tl{ top:14px; left:14px; }
+  .reg.tr{ top:14px; right:14px; }
+
+  /* ---------- header ---------- */
+  header{
+    position: sticky; top:0; z-index: 50;
+    background: rgba(242,241,236,.88);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav{
+    display:flex; align-items:center; justify-content:flex-end;
+    height: 68px;
+  }
+  .logo{
+    font-family:'JetBrains Mono', monospace;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: .04em;
+    color: var(--text);
+    display:flex; align-items:center; gap:8px;
+  }
+  .logo .dot{ width:7px; height:7px; background: var(--accent); border-radius:1px; }
+  nav.links{ display:flex; gap: 6px; }
+  nav.links a{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    letter-spacing: .06em;
+    color: var(--text-dim);
+    padding: 8px 14px;
+    border: 1px solid transparent;
+    transition: color .15s ease, border-color .15s ease, background .15s ease;
+  }
+  nav.links a:hover{ color: var(--text); border-color: var(--line); background: var(--panel); }
+
+  .lang-toggle{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    letter-spacing: .06em;
+    color: var(--text);
+    background: transparent;
+    border: 1px solid var(--line);
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all .15s ease;
+  }
+  .lang-toggle:hover{ background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* ---------- hero ---------- */
+  .hero{
+    position: relative;
+    padding: 96px 0 64px;
+    border-bottom: 1px solid var(--line);
+    overflow:hidden;
+  }
+  .eyebrow{
+    font-size: 12px;
+    letter-spacing: .18em;
+    color: var(--accent);
+    margin-bottom: 22px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{
+    content:"";
+    width: 26px; height:1px;
+    background: var(--accent);
+  }
+  h1.name{
+    font-family:'Rubik', sans-serif;
+    font-weight: 900;
+    font-size: clamp(46px, 9vw, 108px);
+    line-height: .98;
+    margin: 0 0 20px;
+    letter-spacing: -.01em;
+  }
+  .hero-sub{
+    max-width: 620px;
+    font-size: clamp(16px, 2.2vw, 19px);
+    color: var(--text-dim);
+    font-weight: 400;
+    margin-bottom: 56px;
+  }
+  .hero-sub b{ color: var(--text); font-weight: 500; }
+
+  /* title block — engineering drawing stamp */
+  .titleblock{
+    margin-inline-start: auto;
+    width: min(100%, 480px);
+    border: 1px solid var(--line);
+    background: var(--panel);
+  }
+  .tb-row{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .tb-cell{
+    border-top: 1px solid var(--line);
+    border-inline-start: 1px solid var(--line);
+    padding: 10px 14px;
+  }
+  .tb-row:first-child .tb-cell{ border-top: none; }
+  .tb-cell:first-child{ border-inline-start: none; }
+  .tb-label{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: .12em;
+    color: var(--text-faint);
+    margin-bottom: 4px;
+  }
+  .tb-value{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: var(--text);
+    letter-spacing: .01em;
+  }
+  .tb-value.accent{ color: var(--accent); }
+
+  /* ---------- sections ---------- */
+  section{ padding: 88px 0; position:relative; border-bottom: 1px solid var(--line); }
+  .sec-head{
+    display:flex; align-items:baseline; gap: 16px; margin-bottom: 48px;
+  }
+  .sec-num{
+    font-family:'JetBrains Mono', monospace;
+    color: var(--accent);
+    font-size: 13px;
+  }
+  .sec-title{
+    font-family:'Rubik', sans-serif;
+    font-weight: 700;
+    font-size: clamp(28px, 4vw, 40px);
+  }
+  .sec-line{ flex:1; height:1px; background: var(--line); }
+
+  /* ---------- about ---------- */
+  .about-grid{
+    display:grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 64px;
+  }
+  .about-text p{ color: var(--text-dim); font-size: 16px; margin: 0 0 18px; }
+  .about-text b{ color: var(--text); font-weight: 500; }
+
+  .ruler{
+    border-inline-start: 1px solid var(--line);
+    padding-inline-start: 28px;
+  }
+  .ruler-title{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .14em;
+    color: var(--text-faint);
+    margin-bottom: 18px;
+  }
+  .tick{
+    border-bottom: 1px dashed var(--line-soft);
+    font-size: 14.5px;
+    color: var(--text);
+  }
+  .tick:last-child{ border-bottom:none; }
+  .tick-head{
+    display:flex; align-items:center; gap: 12px;
+    padding: 11px 0;
+    cursor: pointer;
+    background: none; border: none;
+    width: 100%;
+    text-align: inherit;
+    font-family: 'Heebo', sans-serif;
+    font-size: 14.5px;
+    color: var(--text);
+  }
+  .tick .n{
+    font-family:'JetBrains Mono', monospace;
+    color: var(--text-faint);
+    font-size: 11px;
+    width: 22px;
+    flex-shrink: 0;
+  }
+  .tick-label{ flex:1; }
+  .tick-plus{
+    font-family:'JetBrains Mono', monospace;
+    color: var(--accent);
+    font-size: 15px;
+    transition: transform .2s ease;
+    flex-shrink: 0;
+  }
+  .tick-head[aria-expanded="true"] .tick-plus{ transform: rotate(45deg); }
+  .tick-body{
+    display:grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows .3s ease;
+  }
+  .tick-body-inner{ overflow:hidden; min-height:0; }
+  .tick-body.open{ grid-template-rows: 1fr; }
+  .tick-body p{
+    margin: 0 0 14px 34px;
+    color: var(--text-dim);
+    font-size: 13.5px;
+    line-height: 1.6;
+  }
+
+  .timeline{ margin-top: 40px; }
+  .t-item{
+    display:grid;
+    grid-template-columns: 130px 1px 1fr;
+    gap: 20px;
+    padding-bottom: 28px;
+  }
+  .t-item:last-child{ padding-bottom:0; }
+  .t-when{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+  .t-rule{ background: var(--line); }
+  .t-body h4{ margin: 0 0 6px; font-size: 16px; font-weight: 500; }
+  .t-body p{ margin:0; color: var(--text-dim); font-size: 14.5px; }
+
+  .t-more{
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows .35s ease;
+  }
+  .t-more-inner{ overflow: hidden; min-height: 0; }
+  .t-more.open{ grid-template-rows: 1fr; }
+  .t-more-inner .t-item:first-child{ padding-top: 2px; }
+
+  .tl-toggle{
+    display:flex; align-items:center; gap: 8px;
+    background: none; border: none; cursor: pointer;
+    color: var(--accent);
+    font-size: 12.5px;
+    letter-spacing: .06em;
+    padding: 14px 0 0;
+    border-top: 1px dashed var(--line);
+    margin-top: 4px;
+    width: 100%;
+  }
+  .tl-toggle:hover{ color: var(--accent-dim); }
+  #tl-toggle-arrow{ transition: transform .25s ease; }
+  .tl-toggle.open #tl-toggle-arrow{ transform: rotate(180deg); }
+
+  /* ---------- projects ---------- */
+  .proj-note{
+    color: var(--text-dim);
+    font-size: 14.5px;
+    margin-bottom: 40px;
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  }
+  .proj-note a{ color: var(--accent); border-bottom: 1px solid var(--accent-dim); }
+
+  .proj-grid{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .card{
+    position:relative;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    transition: border-color .15s ease, transform .15s ease;
+  }
+  .card:hover{ border-color: var(--text-faint); }
+  .card-img{
+    aspect-ratio: 16/10;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel-2);
+    display:flex; align-items:center; justify-content:center;
+    position: relative;
+    overflow: hidden;
+  }
+  .card-img img{
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .card-img span{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    letter-spacing: .1em;
+    color: var(--text-faint);
+    background: var(--bg);
+    padding: 6px 12px;
+    border: 1px solid var(--line);
+  }
+  .corner{ position:absolute; width:10px; height:10px; z-index:2; }
+  .corner::before, .corner::after{ content:""; position:absolute; background: var(--panel); }
+  .corner::before{ width:10px; height:1px; }
+  .corner::after{ width:1px; height:10px; }
+  .corner.tl{ top:8px; left:8px; }
+  .corner.tr{ top:8px; right:8px; }
+  .card-body{ padding: 20px; }
+  .card-tag{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: .1em;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .card-body h3{ margin: 0 0 8px; font-size: 19px; font-weight: 500; }
+  .card-body p{ margin:0 0 16px; color: var(--text-dim); font-size: 14px; }
+  .card-thumbs{
+    display:flex; gap: 8px;
+    margin-bottom: 16px;
+  }
+  .card-thumbs img{
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    border: 1px solid var(--line);
+  }
+  .card-hit{ cursor: pointer; }
+  .card-img.card-hit{ position: relative; }
+  .card-img.card-hit img{ transition: transform .3s ease; }
+  .card-img.card-hit:hover img{ transform: scale(1.045); }
+  .card-img.card-hit::after{
+    content: "פתיחת פרויקט ↗";
+    position: absolute; inset: auto 0 0 0;
+    padding: 8px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .06em;
+    color: #fff;
+    background: linear-gradient(to top, rgba(15,17,18,.72), transparent);
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity .2s ease, transform .2s ease;
+    pointer-events: none;
+  }
+  .card-img.card-hit:hover::after{ opacity: 1; transform: translateY(0); }
+  h3.card-hit{ transition: color .15s ease; }
+  h3.card-hit:hover{ color: var(--accent); }
+  .card-link{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    display:inline-flex; align-items:center; gap:6px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 2px;
+  }
+  .card-link:hover{ border-color: var(--accent); color: var(--accent); }
+
+  /* ---------- contact ---------- */
+  .contact-panel{
+    border: 1px solid var(--line);
+    background: var(--panel);
+  }
+  .c-row{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 22px 26px;
+    border-bottom: 1px solid var(--line);
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .c-row:last-child{ border-bottom:none; }
+  .c-left{ display:flex; align-items:center; gap: 16px; }
+  .c-icon{
+    width: 38px; height:38px;
+    border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .c-icon svg{ width:17px; height:17px; stroke: var(--accent); fill:none; stroke-width:1.6; }
+  .c-label{ font-family:'JetBrains Mono', monospace; font-size: 10px; letter-spacing:.1em; color: var(--text-faint); margin-bottom:4px; }
+  .c-value{ font-size: 16px; color: var(--text); }
+  .c-value.mono{ font-family:'JetBrains Mono', monospace; font-size: 14.5px; direction: ltr; text-align: right; }
+  .c-btn{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    letter-spacing:.06em;
+    color: var(--text-dim);
+    border: 1px solid var(--line);
+    padding: 9px 16px;
+    background: transparent;
+    cursor: pointer;
+    transition: all .15s ease;
+  }
+  .c-btn:hover{ color: var(--bg); background: var(--accent); border-color: var(--accent); }
+  .c-btn.copied{ color: var(--accent); border-color: var(--accent); }
+
+  .contact-lead{
+    font-family:'Rubik', sans-serif;
+    font-weight: 700;
+    font-size: clamp(26px, 4vw, 36px);
+    max-width: 640px;
+    margin: 0 0 16px;
+  }
+  .contact-sub{ color: var(--text-dim); margin-bottom: 44px; max-width: 520px; }
+
+  /* ---------- footer ---------- */
+  footer{ padding: 32px 0; }
+  .foot-row{
+    display:flex; align-items:center; justify-content:space-between;
+    font-family:'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-faint);
+    letter-spacing:.04em;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  @media (max-width: 760px){
+    .about-grid{ grid-template-columns: 1fr; gap: 40px; }
+    .proj-grid{ grid-template-columns: 1fr; }
+    .titleblock{ width: 100%; }
+    nav.links{ gap: 2px; }
+    nav.links a{ padding: 8px 9px; font-size: 11px; }
+    .t-item{ grid-template-columns: 90px 1px 1fr; gap: 14px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior: auto; }
+    *{ transition: none !important; }
+  }
+
+  /* ---------- project modal ---------- */
+  .modal-overlay{
+    display:none;
+    position: fixed; inset: 0;
+    background: rgba(15,17,18,.72);
+    z-index: 100;
+    padding: 24px;
+    overflow-y: auto;
+  }
+  .modal-overlay.open{ display:block; }
+  .modal{
+    max-width: 860px;
+    margin: 40px auto;
+    background: var(--panel);
+    border: 1px solid var(--line);
+  }
+  .modal-head{
+    display:flex; align-items:flex-start; justify-content:space-between;
+    gap: 16px;
+    padding: 24px 28px;
+    border-bottom: 1px solid var(--line);
+  }
+  .modal-tag{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: .1em;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .modal-head h3{ margin:0; font-family:'Rubik', sans-serif; font-size: 24px; font-weight: 700; }
+  .modal-close{
+    flex-shrink:0;
+    width: 36px; height: 36px;
+    border: 1px solid var(--line);
+    background: transparent;
+    cursor: pointer;
+    font-family:'JetBrains Mono', monospace;
+    font-size: 16px;
+    color: var(--text-dim);
+  }
+  .modal-close:hover{ background: var(--accent); color:#fff; border-color: var(--accent); }
+  .modal-body{ padding: 24px 28px 28px; }
+  .modal-body p{ color: var(--text-dim); font-size: 15px; margin: 0 0 24px; }
+  .modal-gallery{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .modal-gallery img{
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    border: 1px solid var(--line);
+    cursor: zoom-in;
+  }
+  .modal-link{
+    display:inline-flex; align-items:center; gap:6px;
+    margin-top: 22px;
+    font-family:'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: var(--text);
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 2px;
+  }
+  .modal-link:hover{ border-color: var(--accent); color: var(--accent); }
+
+  @media (max-width: 640px){
+    .modal-gallery{ grid-template-columns: repeat(2, 1fr); }
+    .modal-head{ padding: 18px 18px; }
+    .modal-body{ padding: 18px 18px 22px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <button class="lang-toggle mono" id="lang-toggle" onclick="toggleLang()">EN</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="reg tl"></div>
+  <div class="reg tr"></div>
+  <div class="wrap">
+    <div class="eyebrow mono">MAKER — ROBOTICS — MECHANICAL ENGINEERING</div>
+    <h1 class="name" id="hero-name" data-html="1" data-he="מעין<br>מוטאי" data-en="Maayan<br>Motai">מעין<br>מוטאי</h1>
+    <p class="hero-sub" id="hero-sub" data-he='<b>מייקר עם מעל עשור ניסיון</b> בתכנון, ייצור ואינטגרציה של מערכות מכניות ורובוטיות — בדרך לתואר בהנדסת מכונות.' data-en='<b>A maker with over a decade of experience</b> in the design, manufacturing, and integration of mechanical and robotic systems — currently starting a degree in mechanical engineering.' data-html="1">
+      <b>מייקר עם מעל עשור ניסיון</b> בתכנון, ייצור ואינטגרציה של מערכות מכניות ורובוטיות —
+      בדרך לתואר בהנדסת מכונות.
+    </p>
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num mono">01</span>
+      <h2 class="sec-title" id="about-title" data-he="אודות" data-en="About">אודות</h2>
+      <div class="sec-line"></div>
+    </div>
+
+    <div class="about-grid">
+      <div>
+        <div class="about-text">
+          <p id="about-p1" data-he='בעל ניסיון מעשי של <b>למעלה מעשור</b> בתחומי התכנון, הייצור והאינטגרציה של מערכות מכניות, בדגש על רובוטיקה. לאורך השנים צברתי ניסיון רחב במגוון שיטות ייצור — הדפסת תלת־ממד, CNC, חיתוך לייזר, ועבודה עם כלים ומכונות ידניות מגוונות.' data-en='I have <b>over a decade</b> of hands-on experience in the design, manufacturing, and integration of mechanical systems, with a focus on robotics. Over the years I have gained broad experience across manufacturing methods — 3D printing, CNC, laser cutting, and work with various hand tools and machines.' data-html="1">
+            בעל ניסיון מעשי של <b>למעלה מעשור</b> בתחומי התכנון, הייצור והאינטגרציה של מערכות מכניות,
+            בדגש על רובוטיקה. לאורך השנים צברתי ניסיון רחב במגוון שיטות ייצור — הדפסת תלת־ממד,
+            CNC, חיתוך לייזר, ועבודה עם כלים ומכונות ידניות מגוונות.
+          </p>
+          <p id="about-p2" data-he="בנוסף, צברתי ניסיון משמעותי בהדרכה ובהובלת מגוון רחב של פעילויות, קורסים ופרויקטים במסגרות שונות." data-en="I've also gained significant experience instructing and leading a wide range of activities, courses, and projects across different settings.">
+            בנוסף, צברתי ניסיון משמעותי בהדרכה ובהובלת מגוון רחב של פעילויות, קורסים ופרויקטים
+            במסגרות שונות.
+          </p>
+        </div>
+
+        <div class="timeline">
+          <div class="t-item">
+            <div class="t-when mono">2026</div>
+            <div class="t-rule"></div>
+            <div class="t-body">
+              <h4 data-he="בתחילת תואר בהנדסת מכונות" data-en="Starting a mechanical engineering degree">בתחילת תואר בהנדסת מכונות</h4>
+              <p data-he="ממשיך לשלב ניסיון מעשי עם לימודים אקדמיים." data-en="Continuing to combine hands-on experience with academic studies.">ממשיך לשלב ניסיון מעשי עם לימודים אקדמיים.</p>
+            </div>
+          </div>
+          <div class="t-item">
+            <div class="t-when mono">2025</div>
+            <div class="t-rule"></div>
+            <div class="t-body">
+              <h4 data-he="הנחיית פרויקט ממגד״ד — תוכנית תלפיות" data-en="Mentoring a ground-forces project — Talpiot Program">הנחיית פרויקט ממגד״ד — תוכנית תלפיות</h4>
+              <p data-he="הנחיית צוערי תוכנית תלפיות בפיתוח מערכות רובוטיות." data-en="Guiding Talpiot program cadets in developing robotic systems.">הנחיית צוערי תוכנית תלפיות בפיתוח מערכות רובוטיות.</p>
+            </div>
+          </div>
+          <div class="t-item">
+            <div class="t-when mono">2025–2026</div>
+            <div class="t-rule"></div>
+            <div class="t-body">
+              <h4 data-he="תכנון והדרכת קורס CNC" data-en="Designed and taught a CNC course">תכנון והדרכת קורס CNC</h4>
+              <p data-he="קורס מקיף לנבחרת הרובוטיקה של יהוד — 10 מפגשים בני 3 שעות." data-en="A comprehensive course for the Yehud robotics team — 10 sessions of 3 hours each.">קורס מקיף לנבחרת הרובוטיקה של יהוד — 10 מפגשים בני 3 שעות.</p>
+            </div>
+          </div>
+          <div class="t-item">
+            <div class="t-when mono">2022–2025</div>
+            <div class="t-rule"></div>
+            <div class="t-body">
+              <h4 data-he="לוחם ומפקד בחת״ם — מלחמת חרבות ברזל" data-en="Fighter and commander in an artillery unit — Swords of Iron war">לוחם ומפקד בחת״ם — מלחמת חרבות ברזל</h4>
+              <p data-he="בתפקיד האחרון שימש כקצין ניהול, אחראי על הקמת פלוגה חדשה בגדוד סדיר והרצת המחזור הראשון בה. הוכרז מפקד מצטיין מטעם מפקד חטיבת האש 282 ליום העצמאות ה־77." data-en="In his last role he served as a management officer, responsible for standing up a new company within a regular battalion and running its first cohort. Named an outstanding commander by the commander of Fire Brigade 282 for Israel's 77th Independence Day.">בתפקיד האחרון שימש כקצין ניהול, אחראי על הקמת פלוגה חדשה בגדוד סדיר והרצת המחזור הראשון בה. הוכרז מפקד מצטיין מטעם מפקד חטיבת האש 282 ליום העצמאות ה־77.</p>
+            </div>
+          </div>
+          <div class="t-item">
+            <div class="t-when mono">2022</div>
+            <div class="t-rule"></div>
+            <div class="t-body">
+              <h4 data-he="מנטור, נבחרת הרובוטיקה של יהוד (FRC)" data-en="Mentor, Yehud Robotics Team (FRC)">מנטור, נבחרת הרובוטיקה של יהוד (FRC)</h4>
+              <p data-he="הנבחרת זכתה באלופת ישראל 2023 וייצגה את ישראל בתחרות העולמית בארה״ב." data-en="The team won Israel's national championship in 2023 and represented Israel at the world championship in the US.">הנבחרת זכתה באלופת ישראל 2023 וייצגה את ישראל בתחרות העולמית בארה״ב.</p>
+            </div>
+          </div>
+          <div class="t-item">
+            <div class="t-when mono">2022</div>
+            <div class="t-rule"></div>
+            <div class="t-body">
+              <h4 data-he="עבודה אצל Tal Raindel" data-en="Worked at Tal Raindel">עבודה אצל Tal Raindel</h4>
+              <p data-he="חברת פרוטוטייפינג ופיתוח בתחום הנדסת המכונות." data-en="A prototyping and development company in mechanical engineering.">חברת פרוטוטייפינג ופיתוח בתחום הנדסת המכונות.</p>
+            </div>
+          </div>
+
+          <div class="t-more" id="tl-more">
+           <div class="t-more-inner">
+            <div class="t-item">
+              <div class="t-when mono">2019–2022</div>
+              <div class="t-rule"></div>
+              <div class="t-body">
+                <h4 data-he="התנדבות והדרכה — MakeLab" data-en="Volunteering and instructing — MakeLab">התנדבות והדרכה — MakeLab</h4>
+                <p data-he="מעבדת חדשנות וייצור דיגיטלי." data-en="Innovation lab and digital fabrication.">מעבדת חדשנות וייצור דיגיטלי.</p>
+              </div>
+            </div>
+            <div class="t-item">
+              <div class="t-when mono">2019–2022</div>
+              <div class="t-rule"></div>
+              <div class="t-body">
+                <h4 data-he="סגן קפטן וראש צוות מכניקה — BlackUnicorns 5135" data-en="VP Captain and Mechanics Team Lead — BlackUnicorns 5135">סגן קפטן וראש צוות מכניקה — BlackUnicorns 5135</h4>
+                <p data-he="נבחרת הרובוטיקה FRC של תיכון מקיף יהוד." data-en="The FRC robotics team of Yehud Comprehensive High School.">נבחרת הרובוטיקה FRC של תיכון מקיף יהוד.</p>
+              </div>
+            </div>
+            <div class="t-item">
+              <div class="t-when mono">2019–2022</div>
+              <div class="t-rule"></div>
+              <div class="t-body">
+                <h4 data-he="תוכנית ח״צ — מכון ויצמן" data-en="Young Researchers Program — Weizmann Institute">תוכנית ח״צ — מכון ויצמן</h4>
+                <p data-he="תוכנית חוקרים צעירים למצטיינים — הרצאות, מחקר ומפגשים עם מדענים." data-en="A program for outstanding students — lectures, research, and meetings with scientists.">תוכנית חוקרים צעירים למצטיינים — הרצאות, מחקר ומפגשים עם מדענים.</p>
+              </div>
+            </div>
+            <div class="t-item">
+              <div class="t-when mono">2014–2022</div>
+              <div class="t-rule"></div>
+              <div class="t-body">
+                <h4 data-he="פעילות והדרכה — מועדון התעופה רמת גן" data-en="Activity and instruction — Ramat Gan Flying Club">פעילות והדרכה — מועדון התעופה רמת גן</h4>
+                <p data-he="תכנון, בנייה, הדרכה והטסה תוך שימוש באמצעי ייצור מתקדמים וחומרים מרוכבים." data-en="Design, building, instruction, and flying using advanced manufacturing methods and composite materials.">תכנון, בנייה, הדרכה והטסה תוך שימוש באמצעי ייצור מתקדמים וחומרים מרוכבים.</p>
+              </div>
+            </div>
+            <div class="t-item">
+              <div class="t-when mono">2018–2019</div>
+              <div class="t-rule"></div>
+              <div class="t-body">
+                <h4 data-he="תוכנית דה־וינצ׳י — מרכז שוחר מדע" data-en="Da Vinci Program — Shoham Science Center">תוכנית דה־וינצ׳י — מרכז שוחר מדע</h4>
+                <p data-he="תוכנית מדעית לתלמידים מצטיינים ומחוננים: כימיה אי־אורגנית, ביוכימיה, מיקרוביולוגיה, דיבייט ויחסים בינלאומיים." data-en="A science program for outstanding and gifted students: inorganic chemistry, biochemistry, microbiology, debate, and international relations.">תוכנית מדעית לתלמידים מצטיינים ומחוננים: כימיה אי־אורגנית, ביוכימיה, מיקרוביולוגיה, דיבייט ויחסים בינלאומיים.</p>
+              </div>
+            </div>
+            <div class="t-item">
+              <div class="t-when mono">2017–2019</div>
+              <div class="t-rule"></div>
+              <div class="t-body">
+                <h4 data-he="תוכנית ״ניצני מדע״ — מכון ויצמן" data-en="Nitzanei Mada Program — Weizmann Institute">תוכנית ״ניצני מדע״ — מכון ויצמן</h4>
+                <p data-he="תוכנית מצטיינים במכון ויצמן למדע." data-en="An honors program at the Weizmann Institute of Science.">תוכנית מצטיינים במכון ויצמן למדע.</p>
+              </div>
+            </div>
+            <div class="t-item">
+              <div class="t-when mono">2010–2019</div>
+              <div class="t-rule"></div>
+              <div class="t-body">
+                <h4 data-he="חינוך ביתי" data-en="Homeschooled">חינוך ביתי</h4>
+                <p data-he="אוטודידקט — לימוד עצמאי במגוון רחב של תחומים." data-en="Self-taught — independent learning across a wide range of fields.">אוטודידקט — לימוד עצמאי במגוון רחב של תחומים.</p>
+              </div>
+            </div>
+            <div class="t-item">
+              <div class="t-when mono">2019</div>
+              <div class="t-rule"></div>
+              <div class="t-body">
+                <h4 data-he="קבוצת הרובוטיקה Materov — אורט אבין" data-en="Materov Robotics Group — ORT Even">קבוצת הרובוטיקה Materov — אורט אבין</h4>
+                <p data-he="תחרות בניית צוללות ברמה בינלאומית." data-en="An international submarine-building competition.">תחרות בניית צוללות ברמה בינלאומית.</p>
+              </div>
+            </div>
+            <div class="t-item">
+              <div class="t-when mono">2019</div>
+              <div class="t-rule"></div>
+              <div class="t-body">
+                <h4 data-he="קורסי תכנות — שרונה האב" data-en="Programming courses — Sarona Hub">קורסי תכנות — שרונה האב</h4>
+                <p data-he="מרכז היזמות לצעירים בתל אביב." data-en="A youth entrepreneurship center in Tel Aviv.">מרכז היזמות לצעירים בתל אביב.</p>
+              </div>
+            </div>
+            <div class="t-item">
+              <div class="t-when mono">2018</div>
+              <div class="t-rule"></div>
+              <div class="t-body">
+                <h4 data-he="התנדבות בסטארטאפ a-muse" data-en="Volunteered at startup a-muse">התנדבות בסטארטאפ a-muse</h4>
+                <p data-he="תרפיה באמצעות תחנת מוזיקה וירטואלית — עיצוב והדפסה בתלת מימד ובלייזר, ב־Impact Labs." data-en="Therapy via a virtual music station — 3D and laser design and printing, at Impact Labs.">תרפיה באמצעות תחנת מוזיקה וירטואלית — עיצוב והדפסה בתלת מימד ובלייזר, ב־Impact Labs.</p>
+              </div>
+            </div>
+            <div class="t-item">
+              <div class="t-when mono">2015</div>
+              <div class="t-rule"></div>
+              <div class="t-body">
+                <h4 data-he="קורס ייצור דיגיטלי — פאבלאב חולון" data-en="Digital Fabrication Course — FabLab Holon">קורס ייצור דיגיטלי — פאבלאב חולון</h4>
+                <p data-he="תיפעול ועבודה עם מדפסות תלת מימד, CNC, מכונת לייזר וארדואינו, וכן תוכנות עיצוב תלת ממד." data-en="Operating and working with 3D printers, CNC, a laser machine, and Arduino, as well as 3D design software.">תיפעול ועבודה עם מדפסות תלת מימד, CNC, מכונת לייזר וארדואינו, וכן תוכנות עיצוב תלת ממד.</p>
+              </div>
+            </div>
+           </div>
+          </div>
+
+          <button class="tl-toggle mono" id="tl-toggle" onclick="toggleTimeline()">
+            <span id="tl-toggle-label" data-he="הצגת קורות החיים המלאים" data-en="Show full history">הצגת קורות החיים המלאים</span>
+            <span id="tl-toggle-arrow">↓</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="ruler">
+        <div class="ruler-title mono" data-he="// כלים ושיטות עבודה" data-en="// TOOLS & METHODS">// כלים ושיטות עבודה</div>
+        <div class="tick">
+          <button class="tick-head" onclick="toggleTick(this)" aria-expanded="false">
+            <span class="n mono">01</span>
+            <span class="tick-label" data-he="הדפסת תלת־ממד" data-en="3D printing">הדפסת תלת־ממד</span>
+            <span class="tick-plus mono">+</span>
+          </button>
+          <div class="tick-body"><div class="tick-body-inner">
+            <p data-he="מעל עשור של ניסיון במידול להדפסה בתלת מימד, בנוסף לבניה וכיול של מגוון מדפסות FDM." data-en="Over a decade of experience modeling for 3D printing, plus building and calibrating a variety of FDM printers.">מעל עשור של ניסיון במידול להדפסה בתלת מימד, בנוסף לבניה וכיול של מגוון מדפסות FDM.</p>
+          </div></div>
+        </div>
+        <div class="tick">
+          <button class="tick-head" onclick="toggleTick(this)" aria-expanded="false">
+            <span class="n mono">02</span>
+            <span class="tick-label" data-he="עבודת CNC" data-en="CNC machining">עבודת CNC</span>
+            <span class="tick-plus mono">+</span>
+          </button>
+          <div class="tick-body"><div class="tick-body-inner">
+            <p data-he="מתכנון החלק דרך בחירת הכרסום, תכנון ה-CAM, הסטאפ והרצת המכונה. צברתי ניסיון על מספר מכונות ואף העברתי קורס על כך לנבחרת הרובוטיקה 5135." data-en="From part design through choosing the mill, CAM planning, setup, and running the machine. I've worked on several machines and even taught a course on it to the 5135 robotics team.">מתכנון החלק דרך בחירת הכרסום, תכנון ה-CAM, הסטאפ והרצת המכונה. צברתי ניסיון על מספר מכונות ואף העברתי קורס על כך לנבחרת הרובוטיקה 5135.</p>
+          </div></div>
+        </div>
+        <div class="tick">
+          <button class="tick-head" onclick="toggleTick(this)" aria-expanded="false">
+            <span class="n mono">03</span>
+            <span class="tick-label" data-he="חיתוך לייזר" data-en="Laser cutting">חיתוך לייזר</span>
+            <span class="tick-plus mono">+</span>
+          </button>
+          <div class="tick-body"><div class="tick-body-inner">
+            <p data-he="חיתוך והרכבה של מבנים, מארזים ורכיבים מפלטות שונות, לפרויקטים אישיים ופרויקטים במסגרות שונות." data-en="Cutting and assembling structures, enclosures, and components from various sheet materials, for personal and organizational projects.">חיתוך והרכבה של מבנים, מארזים ורכיבים מפלטות שונות, לפרויקטים אישיים ופרויקטים במסגרות שונות.</p>
+          </div></div>
+        </div>
+        <div class="tick">
+          <button class="tick-head" onclick="toggleTick(this)" aria-expanded="false">
+            <span class="n mono">04</span>
+            <span class="tick-label" data-he="כלים ומכונות ידניות" data-en="Hand tools & machines">כלים ומכונות ידניות</span>
+            <span class="tick-plus mono">+</span>
+          </button>
+          <div class="tick-body"><div class="tick-body-inner">
+            <p data-he="עבודת מתכת ועץ קלאסית — מסגרות, ריתוך, מקדחות וכלי סדנה נוספים." data-en="Classic metal and woodwork — framing, welding, drills, and other workshop tools.">עבודת מתכת ועץ קלאסית — מסגרות, ריתוך, מקדחות וכלי סדנה נוספים.</p>
+          </div></div>
+        </div>
+        <div class="tick">
+          <button class="tick-head" onclick="toggleTick(this)" aria-expanded="false">
+            <span class="n mono">05</span>
+            <span class="tick-label" data-he="עבודה עם חומרים מרוכבים" data-en="Composite materials">עבודה עם חומרים מרוכבים</span>
+            <span class="tick-plus mono">+</span>
+          </button>
+          <div class="tick-body"><div class="tick-body-inner">
+            <p data-he="תכנון חלקים, ייצור של תבניות וג׳יגים לייצור, בחירת בדים ודבקים. לרוב בתחום הטיסנאות." data-en="Designing parts, manufacturing molds and jigs for production, choosing fabrics and adhesives. Mostly for aviation projects.">תכנון חלקים, ייצור של תבניות וג׳יגים לייצור, בחירת בדים ודבקים. לרוב בתחום הטיסנאות.</p>
+          </div></div>
+        </div>
+        <div class="tick">
+          <button class="tick-head" onclick="toggleTick(this)" aria-expanded="false">
+            <span class="n mono">06</span>
+            <span class="tick-label" data-he="הרכבת מערכות רובוטיות" data-en="Robotic systems assembly">הרכבת מערכות רובוטיות</span>
+            <span class="tick-plus mono">+</span>
+          </button>
+          <div class="tick-body"><div class="tick-body-inner">
+            <p data-he="אינטגרציה של תת־מערכות מכניות, חשמליות ובקרה למערכת שלמה ופועלת — מהרעיון ועד הרצה בפועל." data-en="Integrating mechanical, electrical, and control subsystems into a complete, working system — from concept to running hardware.">אינטגרציה של תת־מערכות מכניות, חשמליות ובקרה למערכת שלמה ופועלת — מהרעיון ועד הרצה בפועל.</p>
+          </div></div>
+        </div>
+        <div class="tick">
+          <button class="tick-head" onclick="toggleTick(this)" aria-expanded="false">
+            <span class="n mono">07</span>
+            <span class="tick-label" data-he="הדרכה והובלת פרויקטים" data-en="Instruction & project leadership">הדרכה והובלת פרויקטים</span>
+            <span class="tick-plus mono">+</span>
+          </button>
+          <div class="tick-body"><div class="tick-body-inner">
+            <p data-he="תכנון והעברת קורסים, הנחיית צוותים וליווי פרויקטים ממושכים במסגרות חינוכיות, צבאיות וטכנולוגיות." data-en="Designing and teaching courses, guiding teams, and supporting long-term projects across educational, military, and technological settings.">תכנון והעברת קורסים, הנחיית צוותים וליווי פרויקטים ממושכים במסגרות חינוכיות, צבאיות וטכנולוגיות.</p>
+          </div></div>
+        </div>
+        <div class="tick">
+          <button class="tick-head" onclick="toggleTick(this)" aria-expanded="false">
+            <span class="n mono">08</span>
+            <span class="tick-label" data-he="אלקטרוניקה" data-en="Electronics">אלקטרוניקה</span>
+            <span class="tick-plus mono">+</span>
+          </button>
+          <div class="tick-body"><div class="tick-body-inner">
+            <p data-he="תכנון מעגלים ומערכת בקרה למגוון פרויקטים, בנוסף לתכנון PCB בהתאמה אישית." data-en="Designing circuits and control systems for a range of projects, plus custom PCB design.">תכנון מעגלים ומערכת בקרה למגוון פרויקטים, בנוסף לתכנון PCB בהתאמה אישית.</p>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num mono">02</span>
+      <h2 class="sec-title" data-he="פרויקטים" data-en="Projects">פרויקטים</h2>
+      <div class="sec-line"></div>
+    </div>
+
+    <div class="proj-grid">
+      <div class="card">
+        <div class="card-img card-hit" onclick="openProject('frc')"><img src="images/frc-robot.jpg" alt="רובוט תחרות FRC 5135" loading="lazy"></div>
+        <div class="card-body">
+          <div class="card-tag mono">FRC ROBOTICS — TEAM 5135</div>
+          <h3 class="card-hit" onclick="openProject('frc')" data-he="נבחרת הרובוטיקה BlackUnicorns" data-en="BlackUnicorns Robotics Team">נבחרת הרובוטיקה BlackUnicorns</h3>
+          <p data-he="FRC היא תחרות הרובוטיקה הבכירה של ארגון FIRST, שמטרתה קידום ילדים ונוער במקצועות ה-STEM באמצעות תחרויות רובוטיקה. במהלך התיכון לקחתי חלק פעיל בנבחרת של יהוד כראש צוות מכניקה וסגן קפטן הקבוצה." data-en="FRC is the flagship robotics competition of the FIRST organization, aimed at advancing children and teens in STEM through robotics competitions. In high school I was an active member of the Yehud team, as mechanics team lead and team vice-captain.">FRC היא תחרות הרובוטיקה הבכירה של ארגון FIRST, שמטרתה קידום ילדים ונוער במקצועות ה-STEM באמצעות תחרויות רובוטיקה. במהלך התיכון לקחתי חלק פעיל בנבחרת של יהוד כראש צוות מכניקה וסגן קפטן הקבוצה.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-img card-hit" onclick="openProject('makelab')"><img src="images/makelab-menorah.jpg" alt="מיצג אור בהשראת חנוכייה, MakeLab" loading="lazy"></div>
+        <div class="card-body">
+          <div class="card-tag mono">MAKELAB — VOLUNTEERING</div>
+          <h3 class="card-hit" onclick="openProject('makelab')" data-he="התנדבות ב-MakeLab" data-en="Volunteering at MakeLab">התנדבות ב-MakeLab</h3>
+          <p data-he="Makelab — מעבדת חדשנות ביהוד. התנדבתי במעבדה מספר שנים, שבהן עבדתי על פרויקטים רבים ועזרתי לאנשים עם פרויקטים שלהם. לדוגמה: מיצג אור אינטראקטיבי שבנינו לחנוכה, מערכת למיון לגו, מדפסת תלת ממד לאוכל, ועוד ועוד." data-en="MakeLab — an innovation lab in Yehud. I volunteered at the lab for several years, working on many projects of my own and helping others with theirs. Examples: an interactive light installation we built for Hanukkah, a Lego sorting system, a 3D food printer, and more.">Makelab — מעבדת חדשנות ביהוד. התנדבתי במעבדה מספר שנים, שבהן עבדתי על פרויקטים רבים ועזרתי לאנשים עם פרויקטים שלהם. לדוגמה: מיצג אור אינטראקטיבי שבנינו לחנוכה, מערכת למיון לגו, מדפסת תלת ממד לאוכל, ועוד ועוד.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-img card-hit" onclick="openProject('cnc')"><img src="images/cnc-course-board.jpg" alt="קורס CNC לנבחרת הרובוטיקה יהוד" loading="lazy"></div>
+        <div class="card-body">
+          <div class="card-tag mono">CNC — MACHINING & TEACHING</div>
+          <h3 class="card-hit" onclick="openProject('cnc')" data-he="קורס CNC — נבחרת הרובוטיקה יהוד" data-en="CNC Course — Yehud Robotics Team">קורס CNC — נבחרת הרובוטיקה יהוד</h3>
+          <p data-he="תכנון והדרכה של קורס CNC מקיף לתלמידי נבחרת הרובוטיקה של יהוד — מהיסודות ועד תכנון, כרסום ותהליכי עבודה עם ג׳יגים. לצד פרויקטים אישיים ב-CNC." data-en="Designed and taught a comprehensive CNC course for the Yehud robotics team — from the basics through design, machining, and jig-based workflows. Alongside personal CNC projects.">תכנון והדרכה של קורס CNC מקיף לתלמידי נבחרת הרובוטיקה של יהוד — מהיסודות ועד תכנון, כרסום ותהליכי עבודה עם ג׳יגים. לצד פרויקטים אישיים ב-CNC.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-img card-hit" onclick="openProject('aviation')"><img src="images/aviation-hero.jpg" alt="דאון תחרותי F3K" loading="lazy"></div>
+        <div class="card-body">
+          <div class="card-tag mono">COMPOSITE AVIATION — F3K</div>
+          <h3 class="card-hit" onclick="openProject('aviation')" data-he="בניית טיסנים והטסה" data-en="Glider Building & Flying">בניית טיסנים והטסה</h3>
+          <p data-he="תכנון, בנייה והטסה של דאונים מחומרים מרוכבים במועדון התעופה ברמת גן. מקום 2 באליפות ישראל במחלקת F3K, ומקום 3 בשתי תחרויות נוספות." data-en="Designing, building, and flying composite-material gliders at the Ramat Gan flying club. 2nd place in the Israeli F3K championship, and 3rd in two other competitions.">תכנון, בנייה והטסה של דאונים מחומרים מרוכבים במועדון התעופה ברמת גן. מקום 2 באליפות ישראל במחלקת F3K, ומקום 3 בשתי תחרויות נוספות.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-img card-hit" onclick="openProject('combat')"><img src="images/combat-hero.jpg" alt="רובוט קרב Ironsting" loading="lazy"></div>
+        <div class="card-body">
+          <div class="card-tag mono">COMBAT ROBOTICS — ANTWEIGHT 150G</div>
+          <h3 class="card-hit" onclick="openProject('combat')" data-he="רובוט קרב — Ironsting" data-en="Combat Robot — Ironsting">רובוט קרב — Ironsting</h3>
+          <p data-he="תכנון וייצור רובוט קרב קל בקטגוריית Antweight (150 גרם): שלדה מודפסת ב-PP, נשק מכורסם מאלומיניום עם אימפקטור פלדה, ומכסה פוליקרבונט מכורסם להגנה על האלקטרוניקה." data-en="Designed and built a lightweight Antweight (150g) combat robot: PP-printed chassis, a CNC-machined aluminum weapon with a steel impactor, and a machined polycarbonate cover to protect the electronics.">תכנון וייצור רובוט קרב קל בקטגוריית Antweight (150 גרם): שלדה מודפסת ב-PP, נשק מכורסם מאלומיניום עם אימפקטור פלדה, ומכסה פוליקרבונט מכורסם להגנה על האלקטרוניקה.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="modal-overlay" id="project-modal" onclick="if(event.target===this) closeProject()">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-tag mono" id="modal-tag"></div>
+        <h3 id="modal-title"></h3>
+      </div>
+      <button class="modal-close" onclick="closeProject()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p id="modal-desc"></p>
+      <div class="modal-gallery" id="modal-gallery"></div>
+    </div>
+  </div>
+</div>
+
+<section id="contact">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num mono">03</span>
+      <h2 class="sec-title" data-he="צור קשר" data-en="Contact">צור קשר</h2>
+      <div class="sec-line"></div>
+    </div>
+
+    <div class="contact-panel">
+      <div class="c-row">
+        <div class="c-left">
+          <div class="c-icon">
+            <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="m4 6 8 7 8-7"/></svg>
+          </div>
+          <div>
+            <div class="c-label mono">EMAIL</div>
+            <div class="c-value mono">maayan.motai@gmail.com</div>
+          </div>
+        </div>
+        <button class="c-btn" onclick="copyText(this,'maayan.motai@gmail.com')" data-he="העתקה" data-en="Copy">העתקה</button>
+      </div>
+
+      <div class="c-row">
+        <div class="c-left">
+          <div class="c-icon">
+            <svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.4 2.1L8 9.9a16 16 0 0 0 6 6l1.4-1.4a2 2 0 0 1 2.1-.4c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.8 2.2z"/></svg>
+          </div>
+          <div>
+            <div class="c-label mono">PHONE</div>
+            <div class="c-value mono">054-630-4777</div>
+          </div>
+        </div>
+        <button class="c-btn" onclick="copyText(this,'0546304777')" data-he="העתקה" data-en="Copy">העתקה</button>
+      </div>
+
+      <div class="c-row">
+        <div class="c-left">
+          <div class="c-icon">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+          </div>
+          <div>
+            <div class="c-label mono">INSTAGRAM</div>
+            <div class="c-value">maayan_motai@</div>
+          </div>
+        </div>
+        <a class="c-btn" href="https://www.instagram.com/maayan_motai" target="_blank" rel="noopener" data-he="מעבר לפרופיל" data-en="View profile">מעבר לפרופיל</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-row">
+    <span>KIRYAT ONO · 32.0606°N 34.8481°E</span>
+    <span data-he="© 2026 מעין מוטאי" data-en="© 2026 MAAYAN MOTAI">© 2026 MAAYAN MOTAI</span>
+  </div>
+</footer>
+
+<script>
+const PROJECTS = {
+  frc: {
+    tag: 'FRC ROBOTICS — TEAM 5135',
+    title: 'נבחרת הרובוטיקה BlackUnicorns',
+    titleEn: 'BlackUnicorns Robotics Team',
+    desc: 'FRC היא תחרות הרובוטיקה הבכירה של ארגון FIRST, שמטרתה קידום ילדים ונוער במקצועות ה-STEM באמצעות תחרויות רובוטיקה. במהלך התיכון לקחתי חלק פעיל בנבחרת של יהוד כראש צוות מכניקה וסגן קפטן הקבוצה. בכל שנה הקבוצות מקבלות אתגר חדש שהרובוט צריך לבצע, ומרגע זה יש להן 6–8 שבועות לבחור אסטרטגיה, לתכנן מערכת, לבנות פרוטוטייפים, למדל, לייצר, להרכיב, לחבר אלקטרוניקה, לתכנת, להכין מצב אוטונומי, להתאמן על נהיגה ועוד.',
+    descEn: "FRC is the flagship robotics competition of the FIRST organization, aimed at advancing children and teens in STEM through robotics competitions. In high school I was an active member of the Yehud team, as mechanics team lead and team vice-captain. Each year teams get a new challenge the robot has to perform, and from that moment they have 6–8 weeks to choose a strategy, design a system, build prototypes, model, manufacture, assemble, wire electronics, program, prepare an autonomous mode, practice driving, and more.",
+    images: [
+      ['images/frc-robot.jpg','הרובוט המוגמר','The finished robot'],
+      ['images/frc-robot2.jpg','הרובוט המוגמר, זווית נוספת','The finished robot, another angle'],
+      ['images/frc-competition.jpg','תחרות רובוטיקה בינלאומית','International robotics competition'],
+      ['images/frc-intake-balls.jpg','מנגנון קליטה — בדיקת התאמה עם כדורי המשחק','Intake mechanism — fit test with game balls'],
+      ['images/frc-proto1.jpg','פרוטוטייפינג','Prototyping'],
+      ['images/frc-proto2.jpg','פרוטוטייפינג','Prototyping'],
+      ['images/frc-model1.jpg','מידול תלת־ממדי','3D modeling'],
+      ['images/frc-model2.jpg','מידול תלת־ממדי','3D modeling'],
+      ['images/frc-drawing1.jpg','שרטוט טכני','Technical drawing'],
+      ['images/frc-drawing2.jpg','שרטוט טכני','Technical drawing'],
+      ['images/frc-parts.jpg','חלקים לפני הרכבה','Parts before assembly'],
+      ['images/frc-assembly.jpg','הרכבת הרובוט','Assembling the robot'],
+      ['images/frc-team1.jpg','הצוות עובד על הרובוט','The team working on the robot'],
+      ['images/frc-field.jpg','הרובוט על מגרש התחרות','The robot on the competition field'],
+      ['images/frc-kneeling.jpg','הכנות אחרונות לפני משחק','Final prep before a match'],
+    ]
+  },
+  makelab: {
+    tag: 'MAKELAB — VOLUNTEERING',
+    title: 'התנדבות ב-MakeLab',
+    titleEn: 'Volunteering at MakeLab',
+    desc: 'Makelab — מעבדת חדשנות ביהוד. התנדבתי במעבדה מספר שנים, שבהן עבדתי על פרויקטים רבים ועזרתי לאנשים עם פרויקטים שלהם. לדוגמה: מיצג אור אינטראקטיבי שבנינו לחנוכה, מערכת למיון לגו, מדפסת תלת ממד לאוכל, ועוד ועוד.',
+    descEn: 'MakeLab — an innovation lab in Yehud. I volunteered at the lab for several years, working on many projects of my own and helping others with theirs. Examples: an interactive light installation we built for Hanukkah, a Lego sorting system, a 3D food printer, and more.',
+    images: [
+      ['images/makelab-menorah.jpg','מיצג אור בהשראת חנוכייה','Light installation inspired by a hanukkiah'],
+      ['images/makelab-printer-repair.jpg','בניה ותיקון מדפסות תלת־ממד','Building and repairing 3D printers'],
+      ['images/makelab-delta1.jpg','מדפסת דלתא עם ראש דבק חם','Delta printer with a hot-glue head'],
+      ['images/makelab-delta2.jpg','מדפסת דלתא בפעולה','Delta printer in action'],
+      ['images/makelab-vision.jpg','מודל ראיית מכונה — Teachable Machine','Machine vision model — Teachable Machine'],
+      ['images/makelab-sorter.jpg','מכונת המיון הפיזית','The physical sorting machine'],
+    ]
+  },
+  cnc: {
+    tag: 'CNC — MACHINING & TEACHING',
+    title: 'קורס CNC — נבחרת הרובוטיקה יהוד',
+    titleEn: 'CNC Course — Yehud Robotics Team',
+    desc: 'לפני כמה חודשים פנו אליי בבקשה לבנות ולהדריך קורס CNC לתלמידי נבחרת הרובוטיקה של יהוד, לאחר רכישת מכונה חדשה. המטרה הייתה ליצור בסיס של תלמידים ששולטים בעקרונות ה-CNC ובתפיסה של תהליכי עבודה נכונים. אחרי 10 מפגשים ו-30 שעות תוכן בשילוב התנסות אישית הסתיים המפגש האחרון. במהלך הקורס המשתתפים למדו מה זה CNC ממש מהבסיס: איך ניגשים לתכנון חלקים לייצור בכרסום, מה אפשרי ומה פחות, איך בוחרים כרסום וחומר גלם נכון, איך מתכננים פרופיל כרסום נכון בקובץ ה-CAM, מייצאים G-code ומריצים אותו בצורה נכונה ובטוחה — ובנוסף התאמנו על תהליכי עבודה עם ג׳יגים, למשל ליצירת פרופילים. בתמונות אפשר לראות גם פרויקטים אישיים שלי ב-CNC, וגם עבודות של המשתתפים בקורס.',
+    descEn: "A few months ago I was asked to build and teach a CNC course for students on the Yehud robotics team, after the team bought a new machine. The goal was to give students a solid grounding in CNC principles and correct workflow. After 10 sessions and 30 hours of content combined with hands-on practice, the course wrapped up. Participants learned CNC from the ground up: how to approach part design for milling, what's feasible and what isn't, how to choose the right tool and stock material, how to plan a correct tool profile in the CAM file, export G-code, and run it correctly and safely — plus practicing jig-based workflows, for example for cutting profiles. The photos also include my own personal CNC projects alongside participants' work.",
+    images: [
+      ['images/cnc-course-board.jpg','הדגמת תכנון וסימון לפני כרסום','Demonstrating layout and marking before milling'],
+      ['images/cnc-student-piece.jpg','פרויקט של אחד המשתתפים בקורס',"A participant's project from the course"],
+      ['images/cnc-pocket-route.jpg','כרסום כיס בחומר הגלם','Milling a pocket into the stock material'],
+      ['images/cnc-jig-panel.jpg','לוח ג׳יג עם חורי מיקום','A jig panel with locating holes'],
+      ['images/cnc-alu-bracket.jpg','תמיכת אלומיניום מכורסמת','A machined aluminum bracket'],
+      ['images/makelab-cnc.jpg','חלק אלומיניום — CNC','Aluminum part — CNC'],
+      ['images/makelab-cnc2.jpg','פרויקטי CNC בעץ','Wood CNC projects'],
+      ['images/makelab-cnc3.jpg','פרויקטי CNC','CNC projects'],
+      ['images/makelab-cnc4.jpg','פרויקטי CNC','CNC projects'],
+      ['images/cnc-jig-extrusion.jpg','ג׳יג ופרופיל אלומיניום','Jig and aluminum extrusion'],
+      ['images/cnc-df-block.jpg','חלק אלומיניום מכורסם','Machined aluminum part'],
+      ['images/cnc-mold-halves.jpg','שני חצאי תבנית מכורסמים','Two machined mold halves'],
+      ['images/cnc-machine.jpg','מכונת ה-CNC בפעולה','The CNC machine in action'],
+    ]
+  },
+  aviation: {
+    tag: 'COMPOSITE AVIATION — F3K',
+    title: 'בניית טיסנים והטסה',
+    titleEn: 'Glider Building & Flying',
+    desc: 'תכנון, בנייה והטסה של דאונים ומטוסי מרוץ מחומרים מרוכבים, במסגרת מועדון התעופה ברמת גן — משילוב חומרים כמו קרבון וזכוכית, ועד מידול והדפסה תלת־ממדית של חלקים ייעודיים לטיסנים ורחפנים. מקום 2 באליפות ישראל במחלקת F3K, ומקום 3 בשתי תחרויות נוספות.',
+    descEn: 'Designing, building, and flying gliders and racing planes made of composite materials, at the Ramat Gan flying club — from working with carbon fiber and fiberglass to modeling and 3D printing custom parts for gliders and drones. Placed 2nd in the Israeli F3K championship, and 3rd in two other competitions.',
+    images: [
+      ['images/aviation-hero.jpg','דאון תחרותי עם גביע','Competition glider with trophy'],
+      ['images/aviation-trophies.jpg','גביעי התחרויות','Competition trophies'],
+      ['images/aviation-build.jpg','בניית דאון מחומרים מרוכבים','Building a composite glider'],
+      ['images/aviation-build2.jpg','שלב הבנייה','Build stage'],
+      ['images/aviation-parts.jpg','חלקי טיסנים בבנייה','Glider parts being built'],
+      ['images/aviation-printed.jpg','חלק מודפס תלת־ממד לרחפן','A 3D-printed part for a drone'],
+      ['images/aviation-wing-ribs.jpg','נצרים מודפסים לכנף','3D-printed wing ribs'],
+      ['images/aviation-closeup.jpg','דאון מוגמר, תקריב','Finished glider, close-up'],
+    ]
+  },
+  combat: {
+    tag: 'COMBAT ROBOTICS — ANTWEIGHT 150G',
+    title: 'רובוט קרב — Ironsting',
+    titleEn: 'Combat Robot — Ironsting',
+    desc: 'תכנון וייצור רובוט קרב קל בקטגוריית Antweight (150 גרם), לקראת תחרות שהתקיימה בחנוכה במרכז Yarok. שלדת הרובוט הודפסה ברובה בהדפסת תלת־ממד מחומר PP — חומר הדפסה פחות נפוץ, שנבחר בזכות משקלו הנמוך ועמידותו הגבוהה, לצד מגן חיצוני מ-TPU לספיגת מכות. הנשק כורסם מאלומיניום וכולל אימפקטור פלדה המחובר בהברגה, מה שדרש תכנון מדויק של מרכז הכובד וכרסום ברמת דיוק גבוהה. המכסה העליון עשוי פוליקרבונט מכורסם, ונועד להגן על האלקטרוניקה מפני פגיעה ישירה מלמעלה.',
+    descEn: "Designed and built a lightweight Antweight-class (150g) combat robot for a competition held on Hanukkah at the Yarok center. The chassis is mostly 3D-printed in PP — a less common print material, chosen for its low weight and high durability — with an outer TPU shell for impact absorption. The weapon is CNC-machined aluminum with a bolted steel impactor, which required precise center-of-mass planning and high-precision machining. The top cover is machined polycarbonate, designed to protect the electronics from direct hits from above.",
+    images: [
+      ['images/combat-hero.jpg','הרובוט המורכב, מוכן לקרב','The assembled robot, ready to fight'],
+      ['images/combat-scale.jpg','בדיקת משקל — 147.21 גרם','Weight check — 147.21 grams'],
+      ['images/combat-chassis-open.jpg','שלדת הרובוט מבפנים','The chassis, opened up'],
+      ['images/combat-weapon1.jpg','חלק הנשק המכורסם','The machined weapon part'],
+      ['images/combat-weapon2.jpg','חלק הנשק, זווית נוספת','The weapon part, another angle'],
+      ['images/combat-poly-cover.jpg','מכסה עליון מפוליקרבונט מכורסם, לצד שלדת הרובוט','Machined polycarbonate top cover, next to the chassis'],
+    ]
+  }
+};
+
+let currentLang = 'he';
+
+function openProject(key){
+  const p = PROJECTS[key];
+  if(!p) return;
+  document.getElementById('modal-tag').textContent = p.tag;
+  document.getElementById('modal-title').textContent = currentLang === 'he' ? p.title : p.titleEn;
+  document.getElementById('modal-desc').textContent = currentLang === 'he' ? p.desc : p.descEn;
+  const gallery = document.getElementById('modal-gallery');
+  gallery.innerHTML = p.images.map(([src, altHe, altEn]) => `<img src="${src}" alt="${currentLang==='he'?altHe:(altEn||altHe)}" loading="lazy">`).join('');
+  const overlay = document.getElementById('project-modal');
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeProject(){
+  document.getElementById('project-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'Escape') closeProject();
+});
+
+function setLang(lang){
+  currentLang = lang;
+  document.documentElement.lang = lang === 'he' ? 'he' : 'en';
+  document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
+  document.querySelectorAll('[data-he]').forEach(el => {
+    const val = lang === 'he' ? el.dataset.he : el.dataset.en;
+    if (val === undefined) return;
+    if (el.dataset.html === '1') el.innerHTML = val;
+    else el.textContent = val;
+  });
+  document.getElementById('lang-toggle').textContent = lang === 'he' ? 'EN' : 'עב';
+}
+
+function toggleLang(){
+  setLang(currentLang === 'he' ? 'en' : 'he');
+}
+
+function toggleTick(btn){
+  const body = btn.nextElementSibling;
+  const isOpen = body.classList.toggle('open');
+  btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+}
+
+function toggleTimeline(){
+  const more = document.getElementById('tl-more');
+  const btn = document.getElementById('tl-toggle');
+  const label = document.getElementById('tl-toggle-label');
+  const isOpen = more.classList.toggle('open');
+  btn.classList.toggle('open', isOpen);
+  label.textContent = isOpen ? 'הצגה מצומצמת' : 'הצגת קורות החיים המלאים';
+}
+
+function copyText(btn, text){
+  navigator.clipboard.writeText(text).then(()=>{
+    const original = btn.textContent;
+    btn.textContent = 'הועתק ✓';
+    btn.classList.add('copied');
+    setTimeout(()=>{
+      btn.textContent = original;
+      btn.classList.remove('copied');
+    }, 1600);
+  });
+}
+</script>
+
+</body>
+</html>
